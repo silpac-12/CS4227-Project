@@ -28,13 +28,15 @@ const Home = () => {
     return (
         <div className={styles.container}>
             <h1>Available Products</h1>
-            <div className={styles.grid}>
+            <div className={styles.productRow}>
                 {products.length === 0 ? (
                     <p>Loading products...</p>
                 ) : (
                     products.map((product) => (
-                        <div key={product.id} className={styles.product}>
+                        <div key={product.id} className={styles.productCard}>
+                            <img src={product.image_url} alt={product.name} className={styles.productImage} />
                             <h3>{product.name}</h3>
+                            <p>{product.description}</p>
                             <p>${product.price}</p>
                             <Link to="/checkout">
                                 <button onClick={() => handleCheckout(product)}>Buy Now</button>
