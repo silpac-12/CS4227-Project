@@ -13,22 +13,24 @@ const Checkout = () => {
     const [cvv, setCvv] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    var id = 0;
-    console.log("🔍 State:", state);
+    const [orderId, setOrderId] = useState(null);
+    const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+    console.log("State:", state);
 
     // Ensure `selectedItem` exists
-    const selectedItem = state.selectedItem || null;
+    const selectedItem = state.selectedItem || (!paymentSuccess ? null : { name: "Your Order", price: orderId ? 0 : null });
 
     useEffect(() => {
         if (!selectedItem) {
-            console.log("🚨 No item selected! Redirecting...");
+            console.log("No item selected! Redirecting...");
         } else {
-            console.log("✅ Selected Item:", selectedItem);
+            console.log("Selected Item:", selectedItem);
         }
     }, [selectedItem]);
 
     useEffect(() => {
-        console.log("🔄 Step updated:", step);
+        
     }, [step]);
 
     if (!selectedItem) {
@@ -37,17 +39,15 @@ const Checkout = () => {
 
     const itemPrice = parseFloat(selectedItem.price) || 0;
 
-    // ✅ Step 1: Create Order
+    //Step 1: Create Order
     const handleAddressSubmit = async () => {
         if (!email || !address) {
             setError("Please enter your email and address.");
-            console.log("🚨 Missing email or address");
             return;
         }
 
         setLoading(true);
         setError(null);
-        console.log("✅ Submitting order...");
 
         try {
             const orderData = {
@@ -56,25 +56,21 @@ const Checkout = () => {
                 address,
             };
 
-            console.log("📦 Order Data:", orderData);
+            console.log("Order Data:", orderData);
             const response = await createOrder(orderData);
 
             if (!response || !response.orderId) {
                 throw new Error("Invalid response from server");
             }
-            id = response.orderId;
-            console.log("Order Id for var ID: ", id)
-            console.log("✅ Order Created:", response);
+            setOrderId(response.orderId)
 
             dispatch({
                 type: "SET_PAYMENT",
                 payload: { orderId: response.orderId },
             });
 
-            console.log("🔄 Setting step to 2...");
             setStep(2);
         } catch (err) {
-            console.error("❌ Order creation failed:", err);
             setError("Order creation failed. Please try again.");
         } finally {
             setLoading(false);
@@ -83,9 +79,10 @@ const Checkout = () => {
 
     // ✅ Step 2: Process Payment
     const handlePayment = async () => {
-        if (!state.payment || !state.payment.orderId) {
+        if (!orderId) {
             setError("No order found. Please go back and create an order.");
-            console.log("🚨 Payment Error: No orderId found in state", state.payment);
+            console.log("Payment Error: No orderId found in state", state.payment);
+            console.log("id: ", orderId)
             return;
         }
 
@@ -96,21 +93,22 @@ const Checkout = () => {
 
         setLoading(true);
         setError(null);
-        console.log("✅ Processing payment...");
+        console.log("Processing payment...");
 
         try {
             const paymentData = {
-                order_id: state.payment.orderId,
+                order_id: orderId,
                 payment_method: "Card",
             };
 
             const response = await processPayment(paymentData);
-            console.log("✅ Payment Response:", response);
+            console.log("Payment Response:", response);
 
             dispatch({ type: "CLEAR_CART" });
+            setPaymentSuccess(true);
             setStep(3);
         } catch (err) {
-            console.error("❌ Payment failed:", err);
+            console.error("Payment failed:", err);
             setError("Payment failed. Please try again.");
         } finally {
             setLoading(false);
@@ -153,7 +151,7 @@ const Checkout = () => {
             {step === 2 && (
                 <>
                     <h3>Enter Payment Details</h3>
-                    <p>Order ID: {id}</p>
+                    <p>Order ID: {orderId}</p>
                     <p>Total Amount: ${itemPrice.toFixed(2)}</p>
                     <input
                         className={styles.input}
