@@ -1,11 +1,12 @@
 ﻿import { useEffect, useState } from "react";
 import { fetchProducts } from "../services/api";
 import { Link } from "react-router-dom";
-import { useCart } from "../store/cartContext";
+import { useDispatch } from "react-redux";
+import { setSelectedItem } from "../redux/cartSlice";
 import styles from "./Home.module.css";
 
 const Home = () => {
-    const { dispatch } = useCart();
+    const dispatch = useDispatch();
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
@@ -22,7 +23,7 @@ const Home = () => {
 
     const handleCheckout = (product) => {
         console.log("🛒 Setting selected item:", product);
-        dispatch({ type: "SET_SELECTED_ITEM", payload: product });
+        dispatch(setSelectedItem(product));
     };
 
     return (
