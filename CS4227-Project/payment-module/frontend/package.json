@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "React frontend for checkout & payment",
   "main": "src/index.js",
-  "homepage": "https://silpac-12.github.io/CS4227-Project",
+  "homepage": "./",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
