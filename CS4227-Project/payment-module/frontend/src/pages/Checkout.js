@@ -25,16 +25,37 @@ const Checkout = () => {
         return <h2>No item selected. Go back to the homepage.</h2>;
     }
 
-    console.log("CSS Module Styles:", styles);
-    console.log("Container Class Name:", styles.container);
-
-
     const itemPrice = parseFloat(selectedItem?.price) || 0;
+
+    // ✅ Validate Email Format
+    const validateEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    // ✅ Validate Expiry Date (MM/YY format)
+    const validateExpiry = (expiry) => {
+        return /^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry);
+    };
+
+    // ✅ Validate CVV (3-4 digits)
+    const validateCVV = (cvv) => {
+        return /^\d{3,4}$/.test(cvv);
+    };
+
+    // ✅ Validate Card Number (Only Numbers, 13-16 Digits)
+    const validateCardNumber = (card) => {
+        return /^\d{13,16}$/.test(card);
+    };
 
     // ✅ Step 1: Create Order
     const handleAddressSubmit = async () => {
-        if (!email || !address) {
-            setError("Please enter your email and address.");
+        if (!validateEmail(email)) {
+            setError("Invalid email format.");
+            return;
+        }
+
+        if (!address) {
+            setError("Address cannot be empty.");
             return;
         }
 
@@ -71,8 +92,18 @@ const Checkout = () => {
             return;
         }
 
-        if (!cardNumber || !expiry || !cvv) {
-            setError("Please enter all card details.");
+        if (!validateCardNumber(cardNumber)) {
+            setError("Invalid card number. Must be 13-16 digits.");
+            return;
+        }
+
+        if (!validateExpiry(expiry)) {
+            setError("Invalid expiry date format. Use MM/YY.");
+            return;
+        }
+
+        if (!validateCVV(cvv)) {
+            setError("Invalid CVV. Must be 3 or 4 digits.");
             return;
         }
 
@@ -141,23 +172,26 @@ const Checkout = () => {
                     <input
                         className={styles.input}
                         type="text"
-                        placeholder="Card Number"
+                        placeholder="Card Number (13-16 digits)"
                         value={cardNumber}
-                        onChange={(e) => setCardNumber(e.target.value)}
+                        maxLength="16"
+                        onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ""))} // Only allow numbers
                     />
                     <input
                         className={styles.input}
                         type="text"
                         placeholder="Expiry Date (MM/YY)"
                         value={expiry}
-                        onChange={(e) => setExpiry(e.target.value)}
+                        maxLength="5"
+                        onChange={(e) => setExpiry(e.target.value.replace(/[^0-9/]/g, ""))} // Enforce MM/YY
                     />
                     <input
                         className={styles.input}
                         type="text"
-                        placeholder="CVV"
+                        placeholder="CVV (3-4 digits)"
                         value={cvv}
-                        onChange={(e) => setCvv(e.target.value)}
+                        maxLength="4"
+                        onChange={(e) => setCvv(e.target.value.replace(/\D/g, ""))} // Only allow numbers
                     />
                     <button className={styles.button} onClick={handlePayment} disabled={loading}>
                         {loading ? "Processing..." : "Pay Now"}

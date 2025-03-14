@@ -5,12 +5,12 @@ const pool = require("./config/db");
 
 const app = express();
 
-// ✅ Enable CORS with specific options
+
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 app.use(express.json());
 
-// ✅ Register Routes
+// Register Routes
 const orderRoutes = require("./routes/orders");
 app.use("/api/orders", orderRoutes);
 
@@ -20,7 +20,7 @@ app.use("/api/payments", paymentRoutes);
 const productRoutes = require("./routes/products");
 app.use("/api/products", productRoutes);
 
-// ✅ Database Test Route
+// Database Test Route
 app.get("/test-db", async (req, res) => {
     try {
         const [rows] = await pool.query("SELECT 1+1 AS result");
@@ -31,6 +31,6 @@ app.get("/test-db", async (req, res) => {
     }
 });
 
-// ✅ Start Server
+//  Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
