@@ -7,7 +7,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --env=jsdom --watchAll=false --coverage",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
@@ -20,7 +20,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.30.0",
     "react-scripts": "^5.0.1",
-    "redux": "^5.0.1"
+    "redux": "^4.2.1"
   },
   "browserslist": {
     "production": [
@@ -35,6 +35,10 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0"
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "gh-pages": "^6.3.0",
+    "redux-mock-store": "^1.5.5",
+    "redux-thunk": "^2.4.2"
   }
 }
